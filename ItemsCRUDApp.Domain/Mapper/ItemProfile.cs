@@ -14,7 +14,7 @@ namespace ItemsCRUDApp.Domain.Mapper
         {
             CreateMap<ItemRequest, Item>().ReverseMap();
             CreateMap<ItemResponse, Item>().ReverseMap();
-            CreateMap<IEnumerable<ItemResponse>, IEnumerable<Item>>().ReverseMap();
+            CreateMap<List<ItemResponse>, List<Item>>().ReverseMap();
         }
     }
 }

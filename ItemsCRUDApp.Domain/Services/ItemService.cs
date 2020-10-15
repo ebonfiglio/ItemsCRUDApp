@@ -33,6 +33,7 @@ namespace ItemsCRUDApp.Domain.Services
         {
             var entity = await _unitOfWork.ItemRepository.Get(id);
             await _unitOfWork.ItemRepository.Delete(entity);
+            await _unitOfWork.ItemRepository.SaveChanges();
         }
 
         public async Task<ItemResponse> FindAsync(Expression<Func<Item, bool>> predicate)

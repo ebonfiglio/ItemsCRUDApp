@@ -16,6 +16,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
+using ItemsCRUDApp.Domain.Mapper;
 
 namespace ItemsCRUDApp.API
 {
@@ -33,8 +34,7 @@ namespace ItemsCRUDApp.API
         {
             services.AddDbContext<ApplicationDbContext>(options =>
 options.UseSqlServer(Configuration.GetConnectionString("LocalConnection"), b => b.MigrationsAssembly("ItemsCRUDApp.Data")));
-            services.AddAutoMapper(typeof(Startup));
-            services.AddTransient<ApplicationDbContext>();
+            services.AddAutoMapper(typeof(ItemProfile));
             services.AddScoped<IRepository<Item>, ItemRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IItemService, ItemService>();
