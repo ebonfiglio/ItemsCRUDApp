@@ -22,13 +22,14 @@ namespace ItemsCRUDApp.API.Controllers
             _itemService = itemService;
         }
         // GET api/<ItemController>/5
-        
+
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(int id)
         {
             try
             {
                 var item = await _itemService.GetAsync(id);
+                if (item is null) return NotFound();
                 return Ok(item);
             }
             catch (Exception ex)
@@ -46,7 +47,38 @@ namespace ItemsCRUDApp.API.Controllers
                 var items = await _itemService.GetAllAsync();
                 return Ok(items);
             }
-            catch(Exception ex)
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        // GET: api/<ItemController>/MaxPrices
+        [HttpGet("MaxPrices")]
+        public async Task<IActionResult> MaxPrices()
+        {
+            try
+            {
+                var items = await _itemService.MaxPricesOfItems();
+                return Ok(items);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        // GET: api/<ItemController>/MaxPrice
+        [HttpGet("MaxPrice")]
+        public async Task<IActionResult> MaxPrice(ItemRequest request)
+        {
+            try
+            {
+                var price = await _itemService.MaxPriceByItemName(request.ItemName);
+                if (price is null) return NotFound();
+                return Ok(price);
+            }
+            catch (Exception ex)
             {
                 return StatusCode(StatusCodes.Status500InternalServerError);
             }
@@ -68,13 +100,15 @@ namespace ItemsCRUDApp.API.Controllers
         }
 
         // PUT api/<ItemController>/
-        [HttpPut]
-        public async Task<IActionResult> Put(ItemRequest request)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(int id, ItemRequest request)
         {
             try
             {
-               var item = await _itemService.UpdateAsync(request);
-               return Ok(item);
+                request.Id = id;
+                var item = await _itemService.UpdateAsync(request);
+                if (item is null) return NotFound();
+                return Ok(item);
             }
             catch (Exception ex)
             {
