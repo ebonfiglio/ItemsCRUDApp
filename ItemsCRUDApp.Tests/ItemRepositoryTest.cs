@@ -8,17 +8,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Threading.Tasks;
 using System.Linq;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ItemsCRUDApp.Tests
 {
     public class ItemRepositoryTest
     {
-        const string LocalDbConnectionString = "Server=(localdb)\\mssqllocaldb;Database=ItemsCrudDBTest;Trusted_Connection=True;MultipleActiveResultSets=true";
         public ItemRepositoryTest()
         {
-            ContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseSqlServer(LocalDbConnectionString)
-                .Options;
+            var serviceProvider = new ServiceCollection()
+                .AddEntityFrameworkInMemoryDatabase()
+                .BuildServiceProvider();
+
+    
+            var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
+            builder.UseInMemoryDatabase("ItemsCrudDBTest")
+                   .UseInternalServiceProvider(serviceProvider);
+            ContextOptions = builder.Options;
 
             Seed();
         }
@@ -65,6 +71,64 @@ namespace ItemsCRUDApp.Tests
             }
 
 
+        }
+        [Theory]
+        [InlineData(1, "Item 1", 100)]
+        [InlineData(2, "Item 2", 200)]
+        [InlineData(3, "Item 2", 250)]
+        public void GetItem(int id, string itemName, decimal cost)
+        {
+
+            using (var context = new ApplicationDbContext(ContextOptions))
+            {
+                var itemsRepository = new ItemRepository(context);
+
+                var item = itemsRepository.Get(id).GetAwaiter().GetResult();
+
+                Assert.Equal(itemName, item.ItemName);
+                Assert.Equal(cost, item.Cost);
+
+            }
+        }
+
+        [Theory]
+        [InlineData(1,150)]
+        [InlineData(2, 900)]
+        [InlineData(3, 35)]
+        public void UpdateItem(int id, decimal newCost)
+        {
+
+            using (var context = new ApplicationDbContext(ContextOptions))
+            {
+                var itemsRepository = new ItemRepository(context);
+
+                var item = itemsRepository.Get(id).GetAwaiter().GetResult();
+                item.Cost = newCost;
+
+                var updatedItem = itemsRepository.Update(item).GetAwaiter().GetResult();
+
+                Assert.Equal(newCost, updatedItem.Cost);
+
+            }
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2)]
+        [InlineData(3)]
+        public void DeleteItem(int id)
+        {
+
+            using (var context = new ApplicationDbContext(ContextOptions))
+            {
+                var itemsRepository = new ItemRepository(context);
+                var item = itemsRepository.Get(id).GetAwaiter().GetResult();
+                itemsRepository.Delete(item).GetAwaiter().GetResult();
+                var deletedItem = itemsRepository.Delete(id).GetAwaiter().GetResult();
+
+                Assert.Null(deletedItem);
+
+            }
         }
     }
 }
