@@ -124,10 +124,26 @@ namespace ItemsCRUDApp.Tests
                 var itemsRepository = new ItemRepository(context);
                 var item = itemsRepository.Get(id).GetAwaiter().GetResult();
                 itemsRepository.Delete(item).GetAwaiter().GetResult();
-                var deletedItem = itemsRepository.Delete(id).GetAwaiter().GetResult();
+            }
+        }
 
-                Assert.Null(deletedItem);
+        [Theory]
+        [InlineData("Item 4", 750)]
+        public void AddItem(string itemName, decimal cost)
+        {
 
+            using (var context = new ApplicationDbContext(ContextOptions))
+            {
+                var itemsRepository = new ItemRepository(context);
+                var item = new Item()
+                {
+                    ItemName = itemName,
+                    Cost = cost
+                };
+
+                itemsRepository.Add(item).GetAwaiter().GetResult();
+
+                Assert.NotEqual(0m,item.Id);
             }
         }
     }

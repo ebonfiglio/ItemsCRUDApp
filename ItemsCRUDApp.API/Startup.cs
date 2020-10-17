@@ -33,7 +33,7 @@ namespace ItemsCRUDApp.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContext<ApplicationDbContext>(options =>
-options.UseSqlServer(Configuration.GetConnectionString("LocalConnection"), b => b.MigrationsAssembly("ItemsCRUDApp.Data")));
+options.UseSqlServer(Configuration.GetConnectionString("Connection"), b => b.MigrationsAssembly("ItemsCRUDApp.Data")));
             services.AddAutoMapper(typeof(ItemProfile));
             services.AddScoped<IRepository<Item>, ItemRepository>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();
