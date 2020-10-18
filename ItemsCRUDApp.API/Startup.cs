@@ -49,6 +49,11 @@ options.UseSqlServer(Configuration.GetConnectionString("Connection"), b => b.Mig
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseCors(builder => builder
+            .AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader());
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
