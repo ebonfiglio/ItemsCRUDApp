@@ -70,7 +70,7 @@ namespace ItemsCRUDApp.API.Controllers
 
         // GET: api/<ItemController>/MaxPrice
         [HttpGet("MaxPrice")]
-        public async Task<IActionResult> MaxPrice(ItemRequest request)
+        public async Task<IActionResult> MaxPrice([FromQuery]ItemRequest request)
         {
             try
             {
